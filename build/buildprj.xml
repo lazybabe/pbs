@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="buildprj" default="tip" description="项目构建工具">
+    <!-- YAF工程模板 -->
+    <fileset id="tpl" dir="../yaf_tpl" />
+
+    <!-- 待替换配置 -->
+    <fileset id="conf" dir="${prj.dir}">
+        <include name="conf/beta/nginx.conf" />
+        <include name="conf/online/nginx.conf" />
+        <include name="src/conf/application.ini" />
+    </fileset>
+
+    <target name="build" depends="config" description="创建一个使用YAF的新项目">
+        <echo>${prj.name} 创建完成</echo>
+    </target>
+
+    <target name="tip" hidden="true">
+        <echo>Try 'phing -l -q -f ${phing.file}' to see a list of tasks.</echo>
+    </target>
+
+    <target name="prepare" hidden="true">
+        <echo>设置项目</echo>
+        <input propertyname="prj.name">
+            请输入项目名称:</input>
+        <!-- 检查项目名 -->
+        <if>
+            <equals arg1="" arg2="${prj.name}"/>
+            <then>
+                <fail>未输入项目名称</fail>
+            </then>
+        </if>
+        <input propertyname="prj.domain">
+            请输入项目域名:</input>
+        <!-- 设置项目目录 -->
+        <property name="prj.dir" value="${application.startdir}/${prj.name}" override="true" />
+    </target>
+
+    <target name="copytpl" depends="prepare" hidden="true">
+        <echo>初始化代码</echo>
+        <!-- 项目目录已存在 -->
+        <available file="${prj.dir}" type="dir" property="prj.exists" />
+        <fail if="prj.exists">已存在 ${prj.name} 目录</fail>
+        <!-- 拷贝YAF工程模板到新项目 -->
+        <copy todir="${application.startdir}/${prj.name}">
+            <fileset refid="tpl" />
+        </copy>
+    </target>
+
+    <target name="config" depends="copytpl" hidden="true">
+        <echo>初始化配置</echo>
+        <!-- 替换配置 -->
+        <reflexive>
+            <!-- 指定配置文件 -->
+            <fileset dir="${prj.dir}">
+                <include pattern="conf/pbs/build.properties" />
+                <include pattern="conf/beta/nginx.conf" />
+                <include pattern="conf/online/nginx.conf" />
+                <include pattern="src/conf/application.ini" />
+            </fileset>
+            <!-- 替换字符 -->
+            <filterchain>
+                <replacetokens begintoken="{{" endtoken="}}">
+                    <token key="PRJ_NAME" value="${prj.name}" />
+                    <token key="DOMAIN" value="${prj.domain}" />
+                </replacetokens>
+            </filterchain>
+        </reflexive>
+    </target>
+</project>
