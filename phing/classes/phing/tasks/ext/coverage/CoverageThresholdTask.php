@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: f0493a1c73d53a96c2cbe8f6ad074df435a4e3e7 $
+ * $Id: 1cf68f1a4ec652811a5fd9db8353cae9a88ee03e $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,7 +28,7 @@ require_once 'phing/types/Excludes.php';
  * Stops the build if any of the specified coverage threshold was not reached
  *
  * @author  Benjamin Schultz <bschultz@proqrent.de>
- * @version $Id: f0493a1c73d53a96c2cbe8f6ad074df435a4e3e7 $
+ * @version $Id: 1cf68f1a4ec652811a5fd9db8353cae9a88ee03e $
  * @package phing.tasks.ext.coverage
  * @since   2.4.1
  */
@@ -142,9 +142,9 @@ class CoverageThresholdTask extends Task
      */
     public function createClasspath()
     {
-        $this->classpath = new Path();
+        $this->_classpath = new Path();
 
-        return $this->classpath;
+        return $this->_classpath;
     }
 
     /**

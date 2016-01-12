@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: 48160ff147872a4b48eea5d8e38efe30301b718a $
+ *  $Id: e24e1ffe735595a444812e2144455683b00fc371 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -62,7 +62,7 @@ include_once 'phing/util/DirectoryScanner.php';
  *
  * @author    Andreas Aderhold <andi@binarycloud.com>
  * @author    Hans Lellelid <hans@xmpl.org>
- * @version    $Id: 48160ff147872a4b48eea5d8e38efe30301b718a $
+ * @version    $Id: e24e1ffe735595a444812e2144455683b00fc371 $
  * @see        ProjectComponent
  * @package    phing.types
  */
@@ -228,6 +228,12 @@ class AbstractFileSet extends DataType implements SelectorContainer
         }
 
         return $this->defaultPatterns->createExcludesFile();
+    }
+
+    public function setFile(PhingFile $file)
+    {
+        $this->setDir($file->getParentFile());
+        $this->createInclude()->setName($file->getName());
     }
 
     /**

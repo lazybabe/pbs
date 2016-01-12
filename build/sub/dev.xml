@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="dev" default="tip" description="开发环境工具">
+    <target name="tip" hidden="true">
+        <echo>Try 'phing -l -q -f ${phing.file}' to see a list of tasks.</echo>
+    </target>
+
+    <target name="config" description="初始化配置">
+        <echo>初始化配置</echo>
+        <echo>创建配置目录</echo>
+        <mkdir dir="${prj.conf.used}" />
+        <echo>拷贝配置</echo>
+        <copy todir="${prj.conf.used}" overwrite="true">
+            <fileset dir="${prj.conf.tpl}" />
+            <!-- 替换字符 -->
+            <filterchain>
+                <replacetokens begintoken="{{" endtoken="}}">
+                    <token key="PRJ_NAME" value="${prj.name}" />
+                    <token key="PRJ_ROOT" value="${prj.root}" />
+                    <token key="DOMAIN" value="${prj.domain}" />
+                    <token key="USER" value="${user}" />
+                    <token key="DOMAIN_PREFIX" value="${user}." />
+                </replacetokens>
+            </filterchain>
+        </copy>
+        <echo>生成nginx配置软链接</echo>
+        <exec command="sudo ln -s ${prj.conf.used}/nginx.conf ${nginx.link}" />
+        <echo>创建PHP-FPM目录</echo>
+        <exec command="sudo mkdir -p -m 0777 ${fpm.dir}" />
+        <echo>生成PHP-FPM配置</echo>
+        <exec command="sudo ln -s ${prj.conf.used}/fpm.conf ${fpm.conf}" />
+        <echo>生成PHP配置</echo>
+        <exec command="sudo ln -s ${prj.conf.used}/php.ini ${php.ini}" />
+    </target>
+
+    <target name="start" description="启动服务">
+        <echo>启动服务</echo>
+        <phingcall target="fpm_start" />
+        <phingcall target="nginx_reload" />
+    </target>
+
+    <target name="stop" description="停止服务">
+        <echo>停止服务</echo>
+        <phingcall target="fpm_stop" />
+    </target>
+    <target name="restart" description="重启服务">
+        <phingcall target="stop" />
+        <phingcall target="start" />
+    </target>
+
+    <target name="reload" description="重载nginx和php-fpm配置">
+        <echo>重载配置</echo>
+        <phingcall target="nginx_reload" />
+        <phingcall target="fpm_reload" />
+    </target>
+
+    <target name="clean" description="清理项目">
+        <phingcall target="stop" />
+        <echo>清除nginx软链接</echo>
+        <exec command="sudo rm ${nginx.link}" />
+        <echo>清除PHP-FPM目录</echo>
+        <exec command="sudo rm -rf ${fpm.dir}" />
+        <echo>清除当前配置目录</echo>
+        <delete dir="${prj.conf.used}" />
+    </target>
+
+    <target name="build" description="开发环境初始化并启动项目">
+        <phingcall target="config" />
+        <phingcall target="restart" />
+    </target>
+
+    <target name="test" description="开发环境单元测试">
+        <if>
+            <isset property="phpunit.xml" />
+            <then>
+                <foreach list="${phpunit.xml}" param="xml" target="dotest" />
+            </then>
+            <else>
+                <fail>没有PHPUnit配置 phpunit.xml</fail>
+            </else>
+        </if>
+    </target>
+
+    <target name="dotest">
+        <property name="test.conf" value="${prj.root}/src/tests/conf/${xml}" />
+        <available file="${test.conf}" type="file" property="test.conf_exist" />
+        <if>
+            <isset property="test.conf_exist" />
+            <then>
+                <echo>执行测试 ${test.conf}</echo>
+                <exec command="${php.bin} -c ${prj.conf.used}/php.ini `which phpunit` -c ${test.conf}" passthru="true" />
+            </then>
+            <else>
+                <echo level="error">没有找到PHPUnit配置 ${test.conf}</echo>
+            </else>
+        </if>
+    </target>
+</project>

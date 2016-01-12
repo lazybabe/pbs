@@ -1,7 +1,7 @@
 <?php
 
 /*
- *  $Id: d83036de1df3622348c9d43dc79147e2af56124b $
+ *  $Id: 69ad2e753a6efce00ea1ac34adf119d41294d676 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -43,7 +43,7 @@ include_once 'phing/filters/ChainableReader.php';
  *
  * @author    <a href="mailto:yl@seasonfive.com">Yannick Lecaillez</a>
  * @author    hans lellelid, hans@velum.net
- * @version   $Id: d83036de1df3622348c9d43dc79147e2af56124b $
+ * @version   $Id: 69ad2e753a6efce00ea1ac34adf119d41294d676 $
  * @see       BaseParamFilterReader
  * @package   phing.filters
  */
@@ -342,10 +342,10 @@ class ReplaceTokens extends BaseParamFilterReader implements ChainableReader
                     if ($type === "tokenchar") {
                         $name = $params[$i]->getName();
                         if ($name === "begintoken") {
-                            $this->_beginToken = substr($params[$i]->getValue(), 0, 1);
+                            $this->_beginToken = substr($params[$i]->getValue(), 0, strlen($params[$i]->getValue()));
                         } else {
                             if ($name === "endtoken") {
-                                $this->_endToken = substr($params[$i]->getValue(), 0, 1);
+                                $this->_endToken = substr($params[$i]->getValue(), 0, strlen($params[$i]->getValue()));
                             }
                         }
                     } else {

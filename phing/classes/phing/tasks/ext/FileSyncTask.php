@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: 26d4443bfd9b7d374654c1b3fa501b0f74e74f1e $
+ * $Id: 91e1fc27fb2cce52fefd21dc231ea57646cdd89e $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -121,6 +121,12 @@ class FileSyncTask extends Task
      * @var string
      */
     protected $defaultOptions = '-rpKzl';
+
+    /**
+     * Command options.
+     * @var string
+     */
+    protected $options;
 
     /**
      * Connection type.

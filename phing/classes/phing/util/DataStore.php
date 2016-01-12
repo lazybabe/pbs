@@ -1,7 +1,7 @@
 <?php
 
 /*
- *  $Id: 7c28f286cc5a1994a4aa11ee4052f272885af4de $
+ *  $Id: 33628948aa5dc0ffef8f645df415c37b4a6268f2 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,7 +28,7 @@ require_once 'phing/system/io/FileWriter.php';
  *
  * @package phing.util
  * @author  Michiel Rook <mrook@php.net>
- * @version $Id: 7c28f286cc5a1994a4aa11ee4052f272885af4de $
+ * @version $Id: 33628948aa5dc0ffef8f645df415c37b4a6268f2 $
  */
 class DataStore
 {
@@ -86,6 +86,22 @@ class DataStore
     public function put($key, $value, $autocommit = false)
     {
         $this->data[$key] = $value;
+
+        if ($autocommit) {
+            $this->commit();
+        }
+    }
+
+    /**
+     * Remove a value from the data store
+     *
+     * @param string  $key        the key
+     * @param boolean $autocommit whether to auto-commit (write)
+     *                            the data store to disk
+     */
+    public function remove($key, $autocommit = false)
+    {
+        unset($this->data[$key]);
 
         if ($autocommit) {
             $this->commit();

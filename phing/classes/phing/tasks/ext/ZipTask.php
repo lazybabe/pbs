@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: 8dcfc89d8249ef681865e6ed1e5b4d420b43291b $
+ *  $Id: 3e199443346a7e474e65c407ba691e5bdaf40f5a $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,7 +28,7 @@ include_once 'phing/util/StringHelper.php';
  * Creates a zip archive using PHP ZipArchive extension/
  *
  * @author    Michiel Rook <mrook@php.net>
- * @version   $Id: 8dcfc89d8249ef681865e6ed1e5b4d420b43291b $
+ * @version   $Id: 3e199443346a7e474e65c407ba691e5bdaf40f5a $
  * @package   phing.tasks.ext
  * @since     2.1.0
  */
@@ -51,7 +51,8 @@ class ZipTask extends MatchingTask
     private $includeEmpty = true;
 
     private $filesets = array();
-    private $fileSetFiles = array();
+    
+    private $ignoreLinks = false;
 
     /**
      * File path prefix in zip archive
@@ -117,6 +118,16 @@ class ZipTask extends MatchingTask
     public function setIncludeEmptyDirs($bool)
     {
         $this->includeEmpty = (boolean) $bool;
+    }
+
+    /**
+     * Set the ignore symlinks flag.
+     * @param  boolean $bool Flag if symlinks should be ignored
+     * @return void
+     */
+    public function setIgnoreLinks($bool)
+    {
+        $this->ignoreLinks = (boolean) $bool;
     }
 
     /**
@@ -259,7 +270,9 @@ class ZipTask extends MatchingTask
 
                 $pathInZip = str_replace('\\', '/', $pathInZip);
 
-                if ($f->isDirectory()) {
+                if ($this->ignoreLinks && $f->isLink()) {
+                    continue;
+                } elseif ($f->isDirectory()) {
                     if ($pathInZip != '.') {
                         $zip->addEmptyDir($pathInZip);
                     }

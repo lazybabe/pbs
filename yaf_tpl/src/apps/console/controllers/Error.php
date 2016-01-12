@@ -13,12 +13,12 @@ class ErrorController extends Yaf\Controller_Abstract
         } catch (Doctrine\DBAL\DBALException $e) {
             Rest::fail(Error::getMessage(Error::UNAVAILABLE), Error::UNAVAILABLE);
 
-            $logger = Logkit\Logger::ins('dbal');
+            $logger = Logkit\Logger::ins('_dbal');
             $logger->error($e->getMessage());
         } catch (Exception $e) {
             Rest::fail($e->getMessage(), $e->getCode());
 
-            $logger = Logkit\Logger::ins('exception');
+            $logger = Logkit\Logger::ins('_exception');
             $logger->error($e->getMessage());
         }
 

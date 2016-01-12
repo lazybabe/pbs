@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: 1d63c5ad22b8f3ecdbe03a39148964a9e723e0db $
+ *  $Id: e635b2512b71e17b616bda5e66b412984c0718b0 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,13 +25,24 @@ require_once 'phing/Task.php';
  * A PHP code sniffer task. Checking the style of one or more PHP source files.
  *
  * @author  Dirk Thomas <dirk.thomas@4wdmedia.de>
- * @version $Id: 1d63c5ad22b8f3ecdbe03a39148964a9e723e0db $
+ * @version $Id: e635b2512b71e17b616bda5e66b412984c0718b0 $
  * @package phing.tasks.ext
  */
 class PhpCodeSnifferTask extends Task
 {
 
+    /**
+     * A php source code filename or directory
+     *
+     * @var PhingFile
+     */
     protected $file; // the source file (from xml attribute)
+
+    /**
+     * All fileset objects assigned to this task
+     *
+     * @var FileSet[]
+     */
     protected $filesets = array(); // all fileset objects assigned to this task
 
     // parameters for php code sniffer
@@ -71,6 +82,13 @@ class PhpCodeSnifferTask extends Task
     private $haltonerror = false;
     private $haltonwarning = false;
     private $skipversioncheck = false;
+    private $propertyName = null;
+
+    /**
+     * Cache data storage
+     * @var DataStore
+     */
+    protected $cache;
 
     /**
      * Load the necessary environment for running PHP_CodeSniffer.
@@ -344,6 +362,66 @@ class PhpCodeSnifferTask extends Task
     }
 
     /**
+     * Sets the name of the property to use
+     * @param $propertyName
+     */
+    public function setPropertyName($propertyName)
+    {
+        $this->propertyName = $propertyName;
+    }
+
+    /**
+     * Returns the name of the property to use
+     */
+    public function getPropertyName()
+    {
+        return $this->propertyName;
+    }
+
+    /**
+     * Whether to store last-modified times in cache
+     *
+     * @param PhingFile $file
+     */
+    public function setCacheFile(PhingFile $file)
+    {
+        $this->cache = new DataStore($file);
+    }
+
+    /**
+     * Return the list of files to parse
+     *
+     * @return string[] list of absolute files to parse
+     */
+    protected function getFilesToParse()
+    {
+        $filesToParse = array();
+
+        if ($this->file instanceof PhingFile) {
+            $filesToParse[] = $this->file->getPath();
+        } else {
+            // append any files in filesets
+            foreach ($this->filesets as $fs) {
+                $dir = $fs->getDir($this->project)->getAbsolutePath();
+                foreach ($fs->getDirectoryScanner($this->project)->getIncludedFiles() as $filename) {
+                    $fileAbsolutePath = $dir . DIRECTORY_SEPARATOR . $filename;
+                    if ($this->cache) {
+                        $lastMTime = $this->cache->get($fileAbsolutePath);
+                        $currentMTime = filemtime($fileAbsolutePath);
+                        if ($lastMTime >= $currentMTime) {
+                            continue;
+                        } else {
+                            $this->cache->put($fileAbsolutePath, $currentMTime);
+                        }
+                    }
+                    $filesToParse[] = $fileAbsolutePath;
+                }
+            }
+        }
+        return $filesToParse;
+    }
+
+    /**
      * Executes PHP code sniffer against PhingFile or a FileSet
      */
     public function main()
@@ -387,21 +465,7 @@ class PhpCodeSnifferTask extends Task
             $this->formatters[] = $fmt;
         }
 
-        $fileList = array();
-
-        if (!isset($this->file)) {
-            $project = $this->getProject();
-            foreach ($this->filesets as $fs) {
-                $ds = $fs->getDirectoryScanner($project);
-                $files = $ds->getIncludedFiles();
-                $dir = $fs->getDir($this->project)->getAbsolutePath();
-                foreach ($files as $file) {
-                    $fileList[] = $dir . DIRECTORY_SEPARATOR . $file;
-                }
-            }
-        } else {
-            $fileList[] = $this->file->getPath();
-        }
+        $fileList = $this->getFilesToParse();
 
         $cwd = getcwd();
 
@@ -471,9 +535,22 @@ class PhpCodeSnifferTask extends Task
             $_SERVER['argc']++;
         }
 
+        if ($this->cache) {
+            require_once 'phing/tasks/ext/phpcs/Reports_PhingRemoveFromCache.php';
+            PHP_CodeSniffer_Reports_PhingRemoveFromCache::setCache($this->cache);
+            // add a fake report to remove from cache
+            $_SERVER['argv'][] = '--report-phingRemoveFromCache=';
+            $_SERVER['argc']++;
+        }
+
         $codeSniffer->process($fileList, $this->standards, $this->sniffs, $this->noSubdirectories);
         $_SERVER['argv'] = array();
         $_SERVER['argc'] = 0;
+
+        if ($this->cache) {
+            PHP_CodeSniffer_Reports_PhingRemoveFromCache::setCache(null);
+            $this->cache->commit();
+        }
 
         $this->printErrorReport($codeSniffer);
 
@@ -518,16 +595,18 @@ class PhpCodeSnifferTask extends Task
      */
     protected function printErrorReport($phpcs)
     {
-        if ($this->showSniffs) {
-            $sniffs = $phpcs->getSniffs();
-            $sniffStr = '';
-            foreach ($sniffs as $sniff) {
-                if (is_string($sniff)) {
-                    $sniffStr .= '- ' . $sniff . PHP_EOL;
-                } else {
-                    $sniffStr .= '- ' . get_class($sniff) . PHP_EOL;
-                }
+        $sniffs = $phpcs->getSniffs();
+        $sniffStr = '';
+        foreach ($sniffs as $sniff) {
+            if (is_string($sniff)) {
+                $sniffStr .= '- ' . $sniff . PHP_EOL;
+            } else {
+                $sniffStr .= '- ' . get_class($sniff) . PHP_EOL;
             }
+        }
+        $this->project->setProperty($this->getPropertyName(), (string) $sniffStr);
+
+        if ($this->showSniffs) {
             $this->log('The list of used sniffs (#' . count($sniffs) . '): ' . PHP_EOL . $sniffStr, Project::MSG_INFO);
         }
 

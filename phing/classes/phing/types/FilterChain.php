@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: 90a3d72b1ce8df38192ea703c6459d34e0b52b35 $
+ *  $Id: d35bf0481e55f713cf67a71878d978f224baa05e $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,6 +28,7 @@ include_once 'phing/filters/LineContains.php';
 include_once 'phing/filters/LineContainsRegexp.php';
 include_once 'phing/filters/EscapeUnicode.php';
 include_once 'phing/filters/ExpandProperties.php';
+include_once 'phing/filters/PhpArrayMapLines.php';
 include_once 'phing/filters/PrefixLines.php';
 include_once 'phing/filters/ReplaceRegexp.php';
 include_once 'phing/filters/ReplaceTokens.php';
@@ -48,7 +49,7 @@ include_once 'phing/filters/XsltFilter.php';
  * FilterChain may contain a chained set of filter readers.
  *
  * @author    Yannick Lecaillez <yl@seasonfive.com>
- * @version   $Id: 90a3d72b1ce8df38192ea703c6459d34e0b52b35 $
+ * @version   $Id: d35bf0481e55f713cf67a71878d978f224baa05e $
  * @package   phing.types
  */
 class FilterChain extends DataType
@@ -168,6 +169,15 @@ class FilterChain extends DataType
      * @param PrefixLines $o
      */
     public function addEscapeUnicode(EscapeUnicode $o)
+    {
+        $o->setProject($this->project);
+        $this->filterReaders[] = $o;
+    }
+
+    /**
+     * @param PhpArrayMapLines $o
+     */
+    public function addPhpArrayMapLines(PhpArrayMapLines $o)
     {
         $o->setProject($this->project);
         $this->filterReaders[] = $o;

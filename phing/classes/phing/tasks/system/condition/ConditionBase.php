@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: 5b9e26c628e54bdf2ee64764af119a01734b4315 $
+ *  $Id: 7bdc5ce92d85ce81d12a03235957c937fb2d4622 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,7 +33,7 @@ include_once 'phing/parser/CustomChildCreator.php';
  * @author  Hans Lellelid <hans@xmpl.org>
  * @author    Andreas Aderhold <andi@binarycloud.com>
  * @copyright 2001,2002 THYRELL. All rights reserved
- * @version   $Id: 5b9e26c628e54bdf2ee64764af119a01734b4315 $
+ * @version   $Id: 7bdc5ce92d85ce81d12a03235957c937fb2d4622 $
  * @package   phing.tasks.system.condition
  */
 abstract class ConditionBase extends ProjectComponent
@@ -240,6 +240,14 @@ abstract class ConditionBase extends ProjectComponent
     {
         include_once 'phing/tasks/system/condition/SocketCondition.php';
         $num = array_push($this->conditions, new SocketCondition());
+
+        return $this->conditions[$num - 1];
+    }
+
+    public function createIsFailure()
+    {
+        include_once 'phing/tasks/system/condition/IsFailure.php';
+        $num = array_push($this->conditions, new IsFailure());
 
         return $this->conditions[$num - 1];
     }

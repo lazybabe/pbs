@@ -1,6 +1,6 @@
 <?php
 /**
- *  $Id: 96ecabd60a0de76a3db097792bbb5087617bfbc2 $
+ *  $Id: 8eb3563703d50b210a90b2847d7446698b4e9c43 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -157,7 +157,7 @@ class SwitchTask extends Task
 
             $mValue = $this->value;
             if ($this->caseInsensitive) {
-                $cValue = strtoupper($case);
+                $cValue = strtoupper($case->getValue());
                 $mValue = strtoupper($this->value);
             }
 

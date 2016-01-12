@@ -20,8 +20,8 @@
 
     <target name="prepare" hidden="true">
         <echo>设置项目</echo>
-        <input propertyname="prj.name">
-            请输入项目名称:</input>
+        <input propertyname="prj.name" promptChar=":">
+            请输入项目名称</input>
         <!-- 检查项目名 -->
         <if>
             <equals arg1="" arg2="${prj.name}"/>
@@ -29,8 +29,8 @@
                 <fail>未输入项目名称</fail>
             </then>
         </if>
-        <input propertyname="prj.domain">
-            请输入项目域名:</input>
+        <input propertyname="prj.domain" promptChar=":">
+            请输入项目域名</input>
         <!-- 设置项目目录 -->
         <property name="prj.dir" value="${application.startdir}/${prj.name}" override="true" />
     </target>

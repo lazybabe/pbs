@@ -1,7 +1,6 @@
 <?php
-
 /**
- *  $Id: 2f624e5d3edd28e6d7ccb9db3c4b23bd3af595a6 $
+ *  $Id: 4608acf4d70eed8ca1d609fe5b3a2122b0c9705c $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,11 +27,14 @@ require_once 'phing/Task.php';
  * @author  Andreas Aderhold <andi@binarycloud.com>
  * @author  Hans Lellelid <hans@xmpl.org>
  * @author  Christian Weiske <cweiske@cweiske.de>
- * @version $Id: 2f624e5d3edd28e6d7ccb9db3c4b23bd3af595a6 $
+ * @version $Id: 4608acf4d70eed8ca1d609fe5b3a2122b0c9705c $
  * @package phing.tasks.system
  */
 class ExecTask extends Task
 {
+    const INVALID = PHP_INT_MAX;
+
+    private $exitValue = self::INVALID;
 
     /**
      * Command to be executed
@@ -59,6 +61,8 @@ class ExecTask extends Task
      */
     protected $dir;
 
+    protected $currdir;
+
     /**
      * Operating system.
      * @var string
@@ -73,7 +77,7 @@ class ExecTask extends Task
 
     /**
      * Where to direct output.
-     * @var File
+     * @var PhingFile
      */
     protected $output;
 
@@ -97,7 +101,7 @@ class ExecTask extends Task
 
     /**
      * Where to direct error output.
-     * @var File
+     * @var PhingFile
      */
     protected $error;
 
@@ -126,7 +130,6 @@ class ExecTask extends Task
      * @var boolean
      */
     protected $checkreturn = false;
-
 
     /**
      *
@@ -329,11 +332,55 @@ class ExecTask extends Task
             );
         }
 
+        $this->setExitValue($return);
+
         if ($return != 0 && $this->checkreturn) {
             throw new BuildException("Task exited with code $return");
         }
     }
 
+    /**
+     * Set the exit value.
+     *
+     * @param int $value exit value of the process.
+     */
+    protected function setExitValue($value)
+    {
+        $this->exitValue = $value;
+    }
+
+    /**
+     * Query the exit value of the process.
+     *
+     * @return int the exit value or self::INVALID if no exit value has
+     *             been received.
+     */
+    public function getExitValue()
+    {
+        return $this->exitValue;
+    }
+
+    /**
+     * Checks whether exitValue signals a failure on the current system.
+     *
+     * @param int $code
+     *
+     * @return bool
+     */
+    public static function isFailureCode($code)
+    {
+        return $code !== 0;
+    }
+
+    /**
+     * Did this execute return in a failure.
+     *
+     * @return boolean true if and only if the exit code is interpreted as a failure
+     */
+    public function isFailure()
+    {
+        return self::isFailureCode($this->getExitValue());
+    }
 
     /**
      * The command to use.

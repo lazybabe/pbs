@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: f28b97180cfc9062bbce7906fb7258c00899cb6a $
+ * $Id: 534a60eca6b0c4803103b490663a64d85b052e5a $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -30,7 +30,7 @@ require_once 'phing/system/util/Timer.php';
  * with the property <code>XmlLogger.file</code>.
  *
  * @author Michiel Rook <mrook@php.net>
- * @version $Id: f28b97180cfc9062bbce7906fb7258c00899cb6a $
+ * @version $Id: 534a60eca6b0c4803103b490663a64d85b052e5a $
  * @package phing.listener
  */
 class XmlLogger implements BuildLogger
@@ -368,5 +368,83 @@ class XmlLogger implements BuildLogger
      */
     public function setEmacsMode($emacsMode)
     {
+    }
+
+    /**
+     * @return DOMDocument
+     */
+    public function getDoc()
+    {
+        return $this->doc;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBuildTimerStart()
+    {
+        return $this->buildTimerStart;
+    }
+
+    /**
+     * @return DOMElement
+     */
+    public function getBuildElement()
+    {
+        return $this->buildElement;
+    }
+
+    public function setBuildElement($elem)
+    {
+        $this->buildElement = $elem;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getElementStack()
+    {
+        return $this->elementStack;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTimesStack()
+    {
+        return $this->timesStack;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMsgOutputLevel()
+    {
+        return $this->msgOutputLevel;
+    }
+
+    /**
+     * @return OutputStream
+     */
+    public function getOut()
+    {
+        return $this->out;
+    }
+
+    /**
+     * @return OutputStream
+     */
+    public function getErr()
+    {
+        return $this->err;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutFilename()
+    {
+        return $this->outFilename;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: bdeb31dd23f2955530fca5cfe3fb116d8d10bf54 $
+ * $Id: d9772e92cb3f8171dcfe721066c2f23f46f20c58 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,7 +25,7 @@ require_once 'phing/system/io/PhingFile.php';
  * A wrapper for the implementations of PHPUnit2ResultFormatter.
  *
  * @author Michiel Rook <mrook@php.net>
- * @version $Id: bdeb31dd23f2955530fca5cfe3fb116d8d10bf54 $
+ * @version $Id: d9772e92cb3f8171dcfe721066c2f23f46f20c58 $
  * @package phing.tasks.ext.phpunit
  * @since 2.1.0
  */
@@ -166,6 +166,9 @@ class FormatterElement
         } elseif ($this->type == "plain") {
             require_once 'phing/tasks/ext/phpunit/formatter/PlainPHPUnitResultFormatter.php';
             $this->formatter = new PlainPHPUnitResultFormatter($this->parent);
+        } elseif ($this->type == "crap4j") {
+            require_once 'phing/tasks/ext/phpunit/formatter/Crap4jPHPUnitResultFormatter.php';
+            $this->formatter = new Crap4jPHPUnitResultFormatter($this->parent);
         } else {
             throw new BuildException("Formatter '" . $this->type . "' not implemented");
         }

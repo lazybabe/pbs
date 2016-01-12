@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: e2a14ef4ba949fb0e50ebc7c7351eafbc6d87fca $
+ * $Id: 2e99e9d604f7d72f784cd742100df6d09486c102 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -41,7 +41,7 @@ require_once 'phing/Task.php';
  *
  * @author Jorrit Schippers <jorrit at ncode dot nl>
  * @contributor Steffen Sørensen <steffen@sublife.dk>
- * @version $Id: e2a14ef4ba949fb0e50ebc7c7351eafbc6d87fca $
+ * @version $Id: 2e99e9d604f7d72f784cd742100df6d09486c102 $
  * @since 2.3.1
  * @package  phing.tasks.ext
  */
@@ -49,6 +49,7 @@ class FtpDeployTask extends Task
 {
     private $host = null;
     private $port = 21;
+    private $ssl = false;
     private $username = null;
     private $password = null;
     private $dir = null;
@@ -88,6 +89,14 @@ class FtpDeployTask extends Task
     public function setPort($port)
     {
         $this->port = (int) $port;
+    }
+
+    /**
+     * @param $ssl
+     */
+    public function setSsl($ssl)
+    {
+        $this->ssl = (bool) $ssl;
     }
 
     /**
@@ -247,6 +256,15 @@ class FtpDeployTask extends Task
 
         require_once 'Net/FTP.php';
         $ftp = new Net_FTP($this->host, $this->port);
+        if ($this->ssl) {
+            $ret = $ftp->setSsl();
+            if (@PEAR::isError($ret)) {
+                throw new BuildException('SSL connection not supported by php' . ': ' . $ret->getMessage(
+                    ));
+            } else {
+                $this->log('Use SSL connection', $this->logLevel);
+            }
+        }
         $ret = $ftp->connect();
         if (@PEAR::isError($ret)) {
             throw new BuildException('Could not connect to FTP server ' . $this->host . ' on port ' . $this->port . ': ' . $ret->getMessage(

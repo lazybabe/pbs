@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: eb6002c420736708d716098c37f2d1dedc8b071a $
+ * $Id: c71a7731263197ce46ea695e093a3fdc426c788d $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -30,7 +30,7 @@ require_once 'phing/tasks/ext/phpunit/FormatterElement.php';
  * Runs PHPUnit tests.
  *
  * @author Michiel Rook <mrook@php.net>
- * @version $Id: eb6002c420736708d716098c37f2d1dedc8b071a $
+ * @version $Id: c71a7731263197ce46ea695e093a3fdc426c788d $
  * @package phing.tasks.ext.phpunit
  * @see BatchTest
  * @since 2.1.0
@@ -85,7 +85,9 @@ class PHPUnitTask extends Task
          * PEAR old-style, then composer, then PHAR
          */
         @include_once 'PHPUnit/Runner/Version.php';
-        @include_once 'phpunit/Runner/Version.php';
+        if (!class_exists('PHPUnit_Runner_Version')) {
+            @include_once 'phpunit/Runner/Version.php';
+        }
         if (!empty($this->pharLocation)) {
             $GLOBALS['_SERVER']['SCRIPT_NAME'] = '-';
             ob_start();
@@ -387,12 +389,14 @@ class PHPUnitTask extends Task
             }
         }
 
-        $browsers = $config->getSeleniumBrowserConfiguration();
+        if (method_exists($config, 'getSeleniumBrowserConfiguration')) {
+            $browsers = $config->getSeleniumBrowserConfiguration();
 
-        if (!empty($browsers) &&
-            class_exists('PHPUnit_Extensions_SeleniumTestCase')
-        ) {
-            PHPUnit_Extensions_SeleniumTestCase::$browsers = $browsers;
+            if (!empty($browsers) &&
+                class_exists('PHPUnit_Extensions_SeleniumTestCase')
+            ) {
+                PHPUnit_Extensions_SeleniumTestCase::$browsers = $browsers;
+            }
         }
 
         return $phpunit;
@@ -450,12 +454,16 @@ class PHPUnitTask extends Task
         }
 
         $autoloadNew = spl_autoload_functions();
-        foreach ($autoloadNew as $autoload) {
-            spl_autoload_unregister($autoload);
+        if(is_array($autoloadNew)) {
+            foreach ($autoloadNew as $autoload) {
+                spl_autoload_unregister($autoload);
+            }
         }
 
-        foreach ($autoloadSave as $autoload) {
-            spl_autoload_register($autoload);
+        if(is_array($autoloadSave)) {
+            foreach ($autoloadSave as $autoload) {
+                spl_autoload_register($autoload);
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: 5b15a08cc1ffdebc697cd659c070b59b505e799b $
+ *  $Id: a2f9c892002488b0588fc9ccbe2c2c31bb1db502 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -247,6 +247,9 @@ class Mapper extends DataType
                     break;
                 case 'identity':
                     $this->classname = 'phing.mappers.IdentityMapper';
+                    break;
+                case 'firstmatch':
+                    $this->classname = 'phing.mappers.FirstMatchMapper';
                     break;
                 case 'flatten':
                     $this->classname = 'phing.mappers.FlattenMapper';

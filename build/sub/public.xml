@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="public" default="tip" description="项目发版工具">
+    <target name="tip" hidden="true">
+        <echo>Try 'phing -l -q -f ${phing.file}' to see a list of tasks.</echo>
+    </target>
+
+    <target name="rc" description="提交发布版本">
+        <echo>提交发布版本</echo>
+        <gitpull gitPath="${git.bin}" repository="${prj.root}" />
+        <input propertyname="message" promptChar=":">
+            版本注释</input>
+        <input propertyname="choose" validargs="s,f,b" promptChar=":">
+            版本 Major(s).Minor(f).Bugfix(b) </input>
+        <switch value="${choose}">
+            <case value="s">
+                <property name="semver" value="Major" />
+            </case>
+            <case value="f">
+                <property name="semver" value="Minor" />
+            </case>
+            <case value="b">
+                <property name="semver" value="Bugfix" />
+            </case>
+        </switch>
+        <version releasetype="${semver}" file="${prj.root}/version" property="prj.version" />
+        <gitcommit gitPath="${git.bin}" repository="${prj.root}" message="&lt;${prj.version}&gt; ${message}" allFiles="true" />
+        <gittag gitPath="${git.bin}" repository="${prj.root}" name="${prj.version}" force="true" />
+        <gitpush gitPath="${git.bin}" repository="${prj.root}" tags="true" />
+        <gitpush gitPath="${git.bin}" repository="${prj.root}" />
+    </target>
+
+    <target name="pub" depends="prepare,tag,archive,loadprjconf,env" description="Pub项目">
+        <foreach list="${public.env}" param="env" target="dopub" />
+    </target>
+
+    <target name="patch" depends="prepare,tag,archive,loadprjconf,env" description="Patch项目">
+        <foreach list="${public.env}" param="env" target="dopatch" />
+    </target>
+
+    <target name="prepare" hidden="true">
+        <echo>准备项目</echo>
+        <input propertyname="prj.name" promptChar=":">
+            请输入项目名称</input>
+        <!-- 检查项目名 -->
+        <if>
+            <equals arg1="" arg2="${prj.name}" />
+            <then>
+                <fail>未输入项目名称</fail>
+            </then>
+        </if>
+        <tstamp>
+            <format property="public.time" pattern="%y%m%d%H%M%S" locale="zh_CN" />
+        </tstamp>
+        <property name="public.gitrepos" value="${git.repos}${prj.name}" />
+    </target>
+
+    <target name="tag" hidden="true">
+        <exec outputProperty="public.last_tag" command="git ls-remote --tags ${public.gitrepos} | tail | sed 's/^.*\///g'" />
+        <if>
+            <equals arg1="" arg2="${public.last_tag}" />
+            <then>
+                <fail>无法获取项目TAG</fail>
+            </then>
+        </if>
+        <echo>最近TAG列表:</echo>
+        <choose list="${public.last_tag}" propertyName="public.tag" delimiter="${line.separator}" max="1" defaultLast="true" />
+        <if>
+            <equals arg1="" arg2="${public.tag}" />
+            <then>
+                <fail>未输入TAG</fail>
+            </then>
+        </if>
+        <exec outputProperty="public.tagexist" command="git ls-remote --tags ${public.gitrepos} ${public.tag}" />
+        <if>
+            <equals arg1="" arg2="${public.tagexist}" />
+            <then>
+                <fail>TAG不存在</fail>
+            </then>
+        </if>
+    </target>
+
+    <target name="archive" hidden="true">
+        <echo>开始打包</echo>
+        <property name="public.pkgname" value="${prj.name}_${public.tag}_${public.time}" />
+        <property name="public.pkgpath" value="${public.pkgdir}/${public.pkgname}.tar.gz" />
+        <mkdir dir="${public.pkgdir}" />
+        <exec command="git archive --remote=${public.gitrepos} --format=tar.gz --prefix=${public.pkgname}/ --output=${public.pkgpath} ${public.tag}" level="debug" />
+        <echo>打包完成 ${public.pkgpath}</echo>
+    </target>
+
+    <target name="loadprjconf" hidden="true">
+        <property name="public.prjconfdir" value="${public.tmpdir}/${prj.name}" />
+        <property name="public.prjconftmp" value="${public.prjconfdir}/build.properties" />
+        <property name="public.prjconf" value="${public.prjconfdir}/${public.tag}_${public.time}.properties" />
+        <mkdir dir="${public.prjconfdir}" mode="0777" />
+        <exec command="tar zxf ${public.pkgpath} -C ${public.prjconfdir} ${public.pkgname}/conf/pbs/build.properties --strip-components 3" />
+        <move file="${public.prjconftmp}" tofile="${public.prjconf}" />
+        <property file="${public.prjconf}" override="true" logoutput="false" />
+    </target>
+
+    <target name="env" hidden="true">
+        <if>
+            <isset property="public.environment" />
+            <then>
+                <choose list="${public.environment}" propertyName="public.env" />
+            </then>
+            <else>
+                <input propertyname="public.servers" promptChar=":">
+                    请输入要部署的服务器</input>
+                <if>
+                    <equals arg1="" arg2="${public.servers}" />
+                    <then>
+                        <fail>没有要部署的服务器</fail>
+                    </then>
+                </if>
+            </else>
+        </if>
+    </target>
+
+    <target name="dopub" hidden="true">
+        <if>
+            <isset property="public.${env}.servers" />
+            <then>
+                <foreach list="${public.${env}.servers}" param="server" target="dopub1" />
+            </then>
+            <else>
+                <echo level="error">没有配置 ${env} 环境的服务器</echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="dopub1" hidden="true">
+        <input propertyname="choose" validargs="y,n">
+            是否部署至 ${server} ? </input>
+        <if>
+            <equals arg1="y" arg2="${choose}" />
+            <then>
+                <trycatch>
+                    <try>
+                        <retry retrycount="2">
+                            <phingcall target="dopub2" />
+                        </retry>
+                    </try>
+                    <catch>
+                        <echo>${server} 部署失败</echo>
+                    </catch>
+                </trycatch>
+            </then>
+            <else>
+                <echo>不部署 ${server}</echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="dopub2" hidden="true">
+        <echo>部署 ${server}</echo>
+        <exec command="read -s -p &quot;${user}@${server}'s password:&quot; password;echo $password" outputProperty="password" />
+        <php expression="echo PHP_EOL;" level="debug" />
+        <property name="sudo" value="echo '${password}' | sudo -S" />
+        <phingcall target="scp" />
+        <phingcall target="unzip" />
+        <phingcall target="symlink" />
+        <phingcall target="shell" />
+    </target>
+
+    <target name="scp" hidden="true">
+        <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="${sudo} mkdir -m 0777 -p ${public.remote.pkgdir}/${prj.name}" pty="true" failonerror="true" display="false" />
+        <scp username="${user}" password="${password}" host="${server}" port="${public.port}" todir="${public.remote.pkgdir}/${prj.name}" file="${public.pkgpath}" />
+    </target>
+
+    <target name="unzip" hidden="true">
+        <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="cd ${public.remote.pkgdir}/${prj.name};tar zxfm ${public.remote.pkgdir}/${prj.name}/${public.pkgname}.tar.gz" pty="true" failonerror="true" display="false" />
+    </target>
+
+    <target name="symlink" hidden="true">
+        <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="${sudo} mkdir -p ${public.remote.targetdir};${sudo} ln -fns ${public.remote.pkgdir}/${prj.name}/${public.pkgname} ${public.remote.targetdir}/${prj.name}" pty="true" failonerror="true" display="false" />
+    </target>
+
+    <target name="shell" hidden="true">
+        <if>
+            <isset property="public.shell" />
+            <then>
+                <echo>准备执行脚本</echo>
+                <foreach list="${public.shell}" param="shell" target="doshell" />
+            </then>
+        </if>
+    </target>
+
+    <target name="doshell" hidden="true">
+        <available file="${shell}" type="file" property="shell_exist" />
+        <if>
+            <isset property="shell_exist" />
+            <then>
+                <property name="sh" value="${shell}" />
+                <phingcall target="subdoshell" />
+            </then>
+            <else>
+                <resolvepath propertyName="sh" file="${public.remote.targetdir}/${prj.name}/${shell}"/>
+                <available file="${sh}" type="file" property="sh_exist" />
+                <if>
+                    <isset property="sh_exist" />
+                    <then>
+                        <phingcall target="subdoshell" />
+                    </then>
+                    <else>
+                        <echo level="error">没有找到 ${shell}</echo>
+                    </else>
+                </if>
+            </else>
+        </if>
+    </target>
+
+    <target name="subdoshell" hidden="true">
+        <input propertyname="shell_choose" validargs="y,n" defaultValue="y" promptChar=":">
+            是否执行 ${sh} </input>
+        <if>
+            <equals arg1="y" arg2="${shell_choose}" />
+            <then>
+                <echo>执行 ${sh}</echo>
+                <exec command="ssh -t ${user}@${server} -p ${public.port} '${sh}'" passthru="true" />
+            </then>
+        </if>
+    </target>
+</project>

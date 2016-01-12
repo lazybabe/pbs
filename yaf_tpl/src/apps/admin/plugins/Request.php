@@ -32,6 +32,7 @@ class RequestPlugin extends Yaf\Plugin_Abstract
 
     public function dispatchLoopShutdown(Yaf\Request_Abstract $request, Yaf\Response_Abstract $response)
     {
+        $response->setBody(ob_get_clean());
     }
 
 }

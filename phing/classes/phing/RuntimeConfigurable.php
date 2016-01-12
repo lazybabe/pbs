@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: a704848a0662d70eae27cc2c54033a8b9c02f082 $
+ *  $Id: 465efa4e9b1232a9ede67d3a3adadbe1fbafb7e2 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,7 +28,7 @@
  *
  * @author    Andreas Aderhold <andi@binarycloud.com>
  * @author    Hans Lellelid <hans@xmpl.org>
- * @version   $Id: a704848a0662d70eae27cc2c54033a8b9c02f082 $
+ * @version   $Id: 465efa4e9b1232a9ede67d3a3adadbe1fbafb7e2 $
  * @package   phing
  */
 class RuntimeConfigurable

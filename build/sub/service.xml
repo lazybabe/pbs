@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="service" default="tip" description="服务管理工具">
+    <target name="tip" hidden="true">
+        <echo>Try 'phing -l -q -f ${phing.file}' to see a list of tasks.</echo>
+    </target>
+
+    <target name="nginx_reload" hidden="true">
+        <echo>重载nginx配置</echo>
+        <exec command="sudo ${nginx.bin} -s reload" />
+    </target>
+
+    <target name="fpm_start" hidden="true">
+        <echo>启动PHP-FPM</echo>
+        <exec command="sudo ${fpm.bin} start ${prj.name} ${user}" />
+    </target>
+
+    <target name="fpm_stop" hidden="true">
+        <echo>停止PHP-FPM</echo>
+        <exec command="sudo ${fpm.bin} stop ${prj.name} ${user}" />
+    </target>
+
+    <target name="fpm_reload" hidden="true">
+        <echo>重载PHP-FPM配置</echo>
+        <exec command="sudo ${fpm.bin} reload ${prj.name} ${user}" />
+    </target>
+</project>

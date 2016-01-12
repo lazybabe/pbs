@@ -11,21 +11,14 @@ build_dst="/usr/local/bin/buildprj"
 pbs_src=$pbs_dir"/bin/pbs.sh"
 pbs_dst="/usr/local/bin/pbs"
 
-if [ -L $phing_dst ]; then
-    sudo rm $phing_dst
-fi
+phpunit_src=$pbs_dir"/bin/phpunit"
+phpunit_dst="/usr/local/bin/phpunit"
 
-if [ -L $build_dst ]; then
-    sudo rm $build_dst
-fi
+sudo ln -sf $phing_src $phing_dst
 
-if [ -L $pbs_dst ]; then
-    sudo rm $pbs_dst
-fi
+sudo ln -sf $build_src $build_dst
 
-sudo ln -s $phing_src $phing_dst
+sudo ln -sf $pbs_src $pbs_dst
 
-sudo ln -s $build_src $build_dst
-
-sudo ln -s $pbs_src $pbs_dst
+sudo ln -sf $phpunit_src $phpunit_dst
 

@@ -14,8 +14,8 @@ pbs_dir=$(cd $bin_dir; cd ..; pwd);
 buildxml=$pbs_dir"/build/pbs.xml"
 
 if [ $1 ]; then
-    $phing -f $buildxml ${1/,/ }
+    /usr/bin/env php -c $pbs_dir"/phing/php.ini" $phing -f $buildxml ${1/,/ }
 else
-    $phing -l -q -f $buildxml
+    /usr/bin/env php -c $pbs_dir"/phing/php.ini" $phing -l -q -f $buildxml
 fi
 

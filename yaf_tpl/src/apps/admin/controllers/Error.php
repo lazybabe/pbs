@@ -14,12 +14,12 @@ class ErrorController extends BaseController
 
             $this->getView()->display('error/404.html');
         } catch (Doctrine\DBAL\DBALException $e) {
-            $logger = Logkit\Logger::ins('dbal');
+            $logger = Logkit\Logger::ins('_dbal');
             $logger->error($e->getMessage());
 
             $this->getView()->display('error/500.html');
         } catch (Exception $e) {
-            $logger = Logkit\Logger::ins('exception');
+            $logger = Logkit\Logger::ins('_exception');
             $logger->error($e->getMessage());
 
             $this->getView()->display('error/500.html');

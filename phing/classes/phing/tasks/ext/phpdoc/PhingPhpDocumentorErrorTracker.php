@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: cdc6e77b920562023dd6f99d846602145388957d $
+ * $Id: 33771f28a2886e13a8d3c38864d6758311c3e18d $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,13 +33,13 @@ require_once 'PhpDocumentor/phpDocumentor/Errors.inc';
  * PhpDocumentor design.
  *
  * @author Timo A. Hummel <privat@timohummel.com> @author felicitus
- * @version $Id: cdc6e77b920562023dd6f99d846602145388957d $
+ * @version $Id: 33771f28a2886e13a8d3c38864d6758311c3e18d $
  * @package phing.tasks.ext.phpdoc
  */
 class PhingPhpDocumentorErrorTracker extends ErrorTracker
 {
 
-    /*
+    /**
      * @var object	Reference to the task we're called with
      */
     private $task;
