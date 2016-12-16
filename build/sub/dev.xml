@@ -80,7 +80,7 @@
         </if>
     </target>
 
-    <target name="dotest">
+    <target name="dotest" hidden="true">
         <property name="test.conf" value="${prj.root}/src/tests/conf/${xml}" />
         <available file="${test.conf}" type="file" property="test.conf_exist" />
         <if>

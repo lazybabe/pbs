@@ -55,7 +55,7 @@
     </target>
 
     <target name="tag" hidden="true">
-        <exec outputProperty="public.last_tag" command="git ls-remote --tags ${public.gitrepos} | tail | sed 's/^.*\///g'" />
+        <exec outputProperty="public.last_tag" command="git ls-remote --tags ${public.gitrepos} | sed 's/^.*\///g' | sort -V | tail" />
         <if>
             <equals arg1="" arg2="${public.last_tag}" />
             <then>
@@ -154,12 +154,13 @@
 
     <target name="dopub2" hidden="true">
         <echo>部署 ${server}</echo>
-        <exec command="read -s -p &quot;${user}@${server}'s password:&quot; password;echo $password" outputProperty="password" />
+        <exec command="read -s -e -r -p &quot;${user}@${server}'s password:&quot; password;echo $password" outputProperty="password" />
         <php expression="echo PHP_EOL;" level="debug" />
         <property name="sudo" value="echo '${password}' | sudo -S" />
         <phingcall target="scp" />
         <phingcall target="unzip" />
         <phingcall target="symlink" />
+        <phingcall target="reconf" />
         <phingcall target="shell" />
     </target>
 
@@ -176,6 +177,11 @@
         <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="${sudo} mkdir -p ${public.remote.targetdir};${sudo} ln -fns ${public.remote.pkgdir}/${prj.name}/${public.pkgname} ${public.remote.targetdir}/${prj.name}" pty="true" failonerror="true" display="false" />
     </target>
 
+    <target name="reconf" hidden="true">
+        <php expression="explode('.', '${server}')[1]" returnProperty="idc" level="debug" />
+        <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="${sudo} rename .${idc} &quot;&quot; ${public.remote.targetdir}/${prj.name}/conf/${env}/*.${idc}" pty="true" failonerror="true" display="false" />
+    </target>
+
     <target name="shell" hidden="true">
         <if>
             <isset property="public.shell" />
@@ -187,18 +193,18 @@
     </target>
 
     <target name="doshell" hidden="true">
-        <available file="${shell}" type="file" property="shell_exist" />
+        <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="test -f ${shell} &amp;&amp; echo -n 1 || echo -n 0" pty="true" failonerror="true" display="false" property="shell_exist" />
         <if>
-            <isset property="shell_exist" />
+            <equals arg1="${shell_exist}" arg2="1" />
             <then>
                 <property name="sh" value="${shell}" />
                 <phingcall target="subdoshell" />
             </then>
             <else>
                 <resolvepath propertyName="sh" file="${public.remote.targetdir}/${prj.name}/${shell}"/>
-                <available file="${sh}" type="file" property="sh_exist" />
+                <ssh username="${user}" password="${password}" host="${server}" port="${public.port}" command="test -f ${sh} &amp;&amp; echo -n 1 || echo -n 0" pty="true" failonerror="true" display="false" property="shell_exist" />
                 <if>
-                    <isset property="sh_exist" />
+                    <equals arg1="${shell_exist}" arg2="1" />
                     <then>
                         <phingcall target="subdoshell" />
                     </then>

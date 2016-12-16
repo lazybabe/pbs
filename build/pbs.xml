@@ -9,6 +9,9 @@
     <!-- 当前用户 -->
     <exec command="whoami" outputProperty="user" />
 
+    <!-- backspace -->
+    <exec command="stty erase ^H" />
+
     <!-- 载入项目配置 -->
     <available file="${build.properties}" type="file" property="build.inproject" />
     <if>

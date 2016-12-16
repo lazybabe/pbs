@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="buildprj" default="tip" description="项目构建工具">
+    <!-- backspace -->
+    <exec command="stty erase ^H" />
+
     <!-- YAF工程模板 -->
     <fileset id="tpl" dir="../yaf_tpl" />
 
