@@ -14,6 +14,9 @@ pbs_dst="/usr/local/bin/pbs"
 phpunit_src=$pbs_dir"/bin/phpunit"
 phpunit_dst="/usr/local/bin/phpunit"
 
+composer_src=$pbs_dir"/bin/composer"
+composer_dst="/usr/local/bin/composer"
+
 sudo ln -sf $phing_src $phing_dst
 
 sudo ln -sf $build_src $build_dst
@@ -21,4 +24,6 @@ sudo ln -sf $build_src $build_dst
 sudo ln -sf $pbs_src $pbs_dst
 
 sudo ln -sf $phpunit_src $phpunit_dst
+
+sudo ln -sf $composer_src $composer_dst
 

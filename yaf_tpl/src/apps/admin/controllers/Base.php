@@ -4,6 +4,7 @@ class BaseController extends Yaf\Controller_Abstract
 {
     public function init()
     {
+        /*
         //缓存静态资源版本
         $version = Cache\Cache::ins()->fetch('VERSION');
         if ($version === false) {
@@ -12,6 +13,9 @@ class BaseController extends Yaf\Controller_Abstract
         }
 
         $this->_view->staticVersion = $version;
+         */
+
+        $this->_view->staticVersion = '';
 
         //ace skin
         $this->_view->aceSkin       = htmlspecialchars($this->getRequest()->getCookie('ace_skin', 'no-skin'));
