@@ -17,7 +17,7 @@
     <if>
         <isset property="build.inproject" />
         <then>
-            <property file="${build.properties}" logoutput="false" />
+            <property file="${build.properties}" logoutput="false" override="true" />
         </then>
     </if>
 
