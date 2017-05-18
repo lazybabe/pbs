@@ -17,10 +17,10 @@ class Bootstrap extends Yaf\Bootstrap_Abstract
 
     public function _initLoader($dispatcher)
     {
-        $localNameSpace = array(
+        $localNameSpace = [
             'Model',
             'Svc',
-        );
+        ];
 
     	Yaf\Loader::getInstance()->registerLocalNamespace($localNameSpace);
     }

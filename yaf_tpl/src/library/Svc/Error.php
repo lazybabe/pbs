@@ -9,12 +9,12 @@ class Error
 
     const UNKOWN                    = 9999;
 
-    public static $message = array(
+    public static $message = [
         self::NOT_FOUND                 => 'Page Not Found',
         self::UNAVAILABLE               => 'Service Unavailable',
 
         self::UNKOWN                    => '未知错误',
-    );
+    ];
 
     static public function getMessage($errno)
     {

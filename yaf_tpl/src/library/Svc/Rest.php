@@ -3,11 +3,11 @@ namespace Svc;
 
 class Rest
 {
-    private static $result = array(
+    private static $result = [
         'errno'     => Error::UNKOWN,
         'errmsg'    => '',
         'data'      => null,
-    );
+    ];
 
     public static function success($data = null)
     {

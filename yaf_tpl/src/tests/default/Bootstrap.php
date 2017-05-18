@@ -9,10 +9,10 @@ require 'vendor/autoload.php';
 
 $app  = new Yaf\Application(DOC_ROOT.'/conf/application.ini');
 
-$localNameSpace = array(
+$localNameSpace = [
     'Model',
     'Svc',
-);
+];
 
 Yaf\Loader::getInstance()->registerLocalNamespace($localNameSpace);
 

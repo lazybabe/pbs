@@ -8,19 +8,11 @@
         <?php include 'common/nav.html';?>
 
         <div class="main-container" id="main-container">
-            <script type="text/javascript">
-                try{ace.settings.check('main-container' , 'findxed')}catch(e){}
-            </script>
-
             <?php include 'common/sidebar.html';?>
 
             <div class="main-content">
                 <div class="main-content-inner">
                     <div class="breadcrumbs" id="breadcrumbs">
-                        <script type="text/javascript">
-                            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-                        </script>
-
                         <ul class="breadcrumb">
                             <li>
                                 <i class="ace-icon fa fa-home home-icon"></i>
@@ -32,6 +24,16 @@
 
                     <div class="page-content">
                         <?php include 'common/setting.html';?>
+
+                        <div class="page-header">
+                          <h1>
+                            首页
+                            <small>
+                              <i class="ace-icon fa fa-angle-double-right"></i>
+                              Dashboard
+                            </small>
+                          </h1>
+                        </div>
 
                         <!-- content start -->
                         <div class="row">
@@ -47,5 +49,6 @@
         </div>
 
         <?php include 'common/script.html';?>
+        <?php include 'common/ajaxloading.html';?>
     </body>
 </html>

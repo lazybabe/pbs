@@ -15,7 +15,7 @@ class BaseController extends Yaf\Controller_Abstract
         $this->_view->staticVersion = $version;
          */
 
-        $this->_view->staticVersion = '';
+        $this->_view->staticVersion = trim(file_get_contents(DOC_ROOT.'/../version'));;
 
         //ace skin
         $this->_view->aceSkin       = htmlspecialchars($this->getRequest()->getCookie('ace_skin', 'no-skin'));
