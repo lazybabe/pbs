@@ -6,10 +6,10 @@ class BaseController extends Yaf\Controller_Abstract
     {
         /*
         //缓存静态资源版本
-        $version = Cache\Cache::ins()->fetch('VERSION');
+        $version = Libyaf\Cache\Cache::ins()->fetch('VERSION');
         if ($version === false) {
             $version = time();
-            Cache\Cache::ins()->save('VERSION', $version, 604800);
+            Libyaf\Cache\Cache::ins()->save('VERSION', $version, 604800);
         }
 
         $this->_view->staticVersion = $version;

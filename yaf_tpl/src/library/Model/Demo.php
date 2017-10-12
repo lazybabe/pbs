@@ -1,9 +1,9 @@
 <?php
 namespace Model;
 
-use Database\Database;
 use Svc\Error;
-use Logkit\Logger;
+use Libyaf\Database\Database;
+use Libyaf\Logkit\Logger;
 
 class Demo
 {

@@ -28,6 +28,8 @@ git clone https://github.com/qinyuguang/libyaf.git
 
 执行 pbs build ，启动项目
 
+执行 composer install ，安装依赖
+
 
 
 依赖
