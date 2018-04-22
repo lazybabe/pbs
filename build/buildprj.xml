@@ -4,7 +4,7 @@
     <exec command="stty erase ^H" />
 
     <!-- YAF工程模板 -->
-    <fileset id="tpl" dir="../yaf_tpl" />
+    <fileset id="tpl" dir="../yaf_tpl" defaultexcludes="false" />
 
     <!-- 待替换配置 -->
     <fileset id="conf" dir="${prj.dir}">
