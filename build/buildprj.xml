@@ -10,6 +10,8 @@
     <fileset id="conf" dir="${prj.dir}">
         <include name="conf/beta/nginx.conf" />
         <include name="conf/online/nginx.conf" />
+        <include name="conf/online/fpm.conf" />
+        <include name="conf/online/php.ini" />
         <include name="src/conf/application.ini" />
     </fileset>
 
@@ -58,6 +60,8 @@
                 <include pattern="conf/pbs/build.properties" />
                 <include pattern="conf/beta/nginx.conf" />
                 <include pattern="conf/online/nginx.conf" />
+                <include pattern="conf/online/fpm.conf" />
+                <include pattern="conf/online/php.ini" />
                 <include pattern="src/conf/application.ini" />
             </fileset>
             <!-- 替换字符 -->
