@@ -58,7 +58,9 @@
             <!-- 指定配置文件 -->
             <fileset dir="${prj.dir}">
                 <include pattern="conf/pbs/build.properties" />
+                <include pattern="conf/beta/fpm.conf" />
                 <include pattern="conf/beta/nginx.conf" />
+                <include pattern="conf/beta/php.ini" />
                 <include pattern="conf/online/nginx.conf" />
                 <include pattern="conf/online/fpm.conf" />
                 <include pattern="conf/online/php.ini" />

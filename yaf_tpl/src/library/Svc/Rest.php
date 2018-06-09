@@ -18,9 +18,9 @@ class Rest
         }
 
         if ($_GET['callback']) {
-            echo '('.json_encode(self::$result).')';
+            echo '('.json_encode(self::$result, JSON_UNESCAPED_UNICODE).')';
         } else {
-            echo json_encode(self::$result);
+            echo json_encode(self::$result, JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -34,9 +34,9 @@ class Rest
         }
 
         if ($_GET['callback']) {
-            echo '('.json_encode(self::$result).')';
+            echo '('.json_encode(self::$result, JSON_UNESCAPED_UNICODE).')';
         } else {
-            echo json_encode(self::$result);
+            echo json_encode(self::$result, JSON_UNESCAPED_UNICODE);
         }
     }
 
